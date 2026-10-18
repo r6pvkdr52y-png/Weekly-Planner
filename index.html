@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F5F0E6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Weekly plan">
+<meta property="og:title" content="Weekly plan">
+<meta property="og:description" content="Emily's shifts and what's for tea">
+<title>Weekly plan</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#F5F0E6; --card:#FFFDF8; --line:rgba(60,45,30,.12); --text:#2B2418; --muted:#8A7F6E;
+  --accent:#C2562F;
+  --o-bg:#EDE7DA; --o-fg:#6B6150;
+  --s-bg:#DCE8F5; --s-fg:#24507C;
+  --e-bg:#FBE9C6; --e-fg:#7A5100;
+  --t-bg:#DDEFD9; --t-fg:#2F6B2A;
+  --dbl-bg:#F6DDD1;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16130F; --card:#211D17; --line:rgba(255,245,225,.12); --text:#F1EADB; --muted:#9C917D;
+    --accent:#E9805A;
+    --o-bg:#2C2720; --o-fg:#B3A892;
+    --s-bg:#1D3248; --s-fg:#A9CBEE;
+    --e-bg:#42330F; --e-fg:#F2CE7B;
+    --t-bg:#1E3A1B; --t-fg:#A8D9A2;
+    --dbl-bg:#4A2616;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;line-height:1.4}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+.app{max-width:480px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 16px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.sub{font-size:13px;color:var(--muted);margin-top:2px}
+.icon-btn{min-width:44px;height:44px;border-radius:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px}
+.icon-btn.on{color:var(--accent)}
+.seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--o-bg);margin-bottom:10px}
+.seg button{flex:1;height:40px;border-radius:9px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+select,input[type=text],input[type=date],input[type=number],input[type=password]{width:100%;height:46px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-size:16px;-webkit-appearance:none;appearance:none;outline:none}
+select{padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238A7F6E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+input:focus,select:focus{border-color:var(--accent)}
+input:disabled{opacity:.6}
+.count{font-size:12px;color:var(--muted);margin:6px 4px 10px;min-height:16px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.rows{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.row.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.day{min-width:46px}
+.day b{display:block;font-size:15px}
+.day span{font-size:12px;color:var(--muted)}
+.shift{min-width:88px;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.shift.off{font-weight:400;color:var(--muted)}
+.pill{flex:1;text-align:center;font-size:12px;font-weight:600;padding:5px 6px;border-radius:8px}
+.pill.o{background:var(--o-bg);color:var(--o-fg)}
+.pill.s{background:var(--s-bg);color:var(--s-fg)}
+.pill.e{background:var(--e-bg);color:var(--e-fg)}
+.pill.t{background:var(--t-bg);color:var(--t-fg)}
+.food{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 16px 10px}
+.food table{width:100%;table-layout:fixed;border-collapse:collapse}
+.food th{font-size:12px;font-weight:600;color:var(--muted);padding:10px 0 4px;text-align:center}
+.food td{padding:12px 0;border-top:1px solid var(--line);text-align:center;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.food td:first-child{text-align:left;font-size:15px;font-weight:500}
+.food td.zero{color:var(--muted);font-weight:400}
+.food td.dbl{color:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;font-size:15px}
+.btn{height:48px;border-radius:14px;font-weight:600;padding:0 16px;border:1px solid var(--line);background:var(--card)}
+.btn.small{height:38px;font-size:14px;padding:0 12px}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+.btn.danger{color:#C0392B;border-color:rgba(192,57,43,.4)}
+.btn.danger.confirm{background:#C0392B;color:#fff;border-color:#C0392B}
+dialog{margin:auto auto 0;width:min(520px,100%);max-width:100%;max-height:92vh;max-height:92dvh;overflow:auto;border:0;border-radius:22px 22px 0 0;background:var(--bg);color:var(--text);padding:20px 16px calc(18px + env(safe-area-inset-bottom))}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h3{font-size:20px;margin-bottom:14px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+.hint{font-size:13px;color:var(--muted);margin:2px 2px 12px}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;margin:4px 2px 14px}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+.erow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+.etop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.etop b{min-width:36px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:center;margin:10px 0 4px}
+.grid3 .h{font-size:12px;font-weight:600;color:var(--muted);text-align:center}
+.grid3 span{font-size:15px}
+.grid3 input{text-align:center;padding:0 4px}
+.actions{display:grid;gap:10px;margin-top:16px}
+.err{color:#C0392B;font-size:14px;margin-bottom:6px}
+.toast{position:fixed;z-index:300;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,120px);background:var(--text);color:var(--bg);padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap;transition:transform .3s}
+.toast.show{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div>
+      <h1>Weekly plan</h1>
+      <p class="sub">Emily's shifts and what's for tea</p>
+    </div>
+    <button type="button" class="icon-btn" id="lock-btn"></button>
+  </header>
+
+  <div class="seg" id="seg" role="group" aria-label="View">
+    <button type="button" data-v="week" aria-pressed="true">Week</button>
+    <button type="button" data-v="food" aria-pressed="false">Food plan</button>
+  </div>
+  <select id="picker" aria-label="Choose week" hidden></select>
+  <p class="count" id="count"></p>
+  <div class="tools" id="tools" hidden></div>
+  <div id="content"><p class="empty">Loading…</p></div>
+</main>
+
+<dialog id="pw-dlg">
+  <h3>Edit mode</h3>
+  <div class="field"><label for="pw-input">Passcode</label><input type="password" id="pw-input" inputmode="numeric" autocomplete="off"></div>
+  <p class="err" id="pw-err" hidden>That's not right. Try again.</p>
+  <div class="actions">
+    <button type="button" class="btn primary" id="pw-ok">Unlock</button>
+    <button type="button" class="btn" id="pw-cancel">Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="wk-dlg">
+  <h3 id="wk-title">New week</h3>
+  <div class="field"><label for="wk-date">Week starting (Monday)</label><input type="date" id="wk-date"></div>
+  <p class="hint" id="wk-range"></p>
+  <label class="check"><input type="checkbox" id="wk-carry"> Josh stayed over the Sunday before</label>
+  <div id="wk-days"></div>
+  <div class="actions">
+    <button type="button" class="btn primary" id="wk-save">Save week</button>
+    <button type="button" class="btn danger" id="wk-del" hidden>Delete week</button>
+    <button type="button" class="btn" id="wk-cancel">Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="fd-dlg">
+  <h3 id="fd-title">New food plan</h3>
+  <div class="field"><label for="fd-date">Week starting (Monday)</label><input type="date" id="fd-date"></div>
+  <p class="hint" id="fd-hint"></p>
+  <button type="button" class="btn small" id="fd-fill" hidden>Recalculate from saved week</button>
+  <div class="grid3">
+    <span></span><span class="h">Single</span><span class="h">Double</span>
+    <span>Breakfast</span><input type="number" id="fd-sb" min="0" inputmode="numeric"><input type="number" id="fd-db" min="0" inputmode="numeric">
+    <span>Lunch</span><input type="number" id="fd-sl" min="0" inputmode="numeric"><input type="number" id="fd-dl" min="0" inputmode="numeric">
+    <span>Tea</span><input type="number" id="fd-st" min="0" inputmode="numeric"><input type="number" id="fd-dt" min="0" inputmode="numeric">
+  </div>
+  <div class="actions">
+    <button type="button" class="btn primary" id="fd-save">Save food plan</button>
+    <button type="button" class="btn danger" id="fd-del" hidden>Delete food plan</button>
+    <button type="button" class="btn" id="fd-cancel">Cancel</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB7n1ta9mctkO2r_POqAQQNWGs89-herqE",
+  authDomain: "weighttracker-c59df.firebaseapp.com",
+  projectId: "weighttracker-c59df",
+  storageBucket: "weighttracker-c59df.firebasestorage.app",
+  messagingSenderId: "1038763378023",
+  appId: "1:1038763378023:web:820edc382b8d4f8a39dbc2"
+};
+const db = getFirestore(initializeApp(firebaseConfig));
+
+const PASSCODE = '2788';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const TYPES = {
+  O: { label: 'Opposite shifts', c: 'o' },
+  S: { label: "Staying over at Emily's", c: 's' },
+  E: { label: 'Emily over for tea', c: 'e' },
+  T: { label: "Josh at Emily's for tea", c: 't' }
+};
+const LOCK_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+
+const $ = id => document.getElementById(id);
+const LS = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const pad = n => String(n).padStart(2, '0');
+const parseD = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const fmtD = ms => { const d = new Date(ms); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`; };
+const addDays = (s, n) => fmtD(parseD(s) + n * 864e5);
+const weekKey = s => { const ms = parseD(s); const dow = (new Date(ms).getUTCDay() + 6) % 7; return fmtD(ms - dow * 864e5); };
+const shortDate = s => { const d = new Date(parseD(s)); return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`; };
+const dmy = s => { const [y, m, d] = s.split('-'); return `${d}/${m}/${y.slice(2)}`; };
+const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const range = k => `${shortDate(k)} – ${shortDate(addDays(k, 6))}`;
+
+let weeks = {}, plans = {};
+let loadedW = false, loadedP = false, failed = false;
+let view = LS.get('pl_view') === 'food' ? 'food' : 'week';
+let cur = null;
+let edit = LS.get('pl_edit') === '1';
+
+let toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function calc(w) {
+  const t = { single: { b: 0, l: 0, t: 0 }, double: { b: 0, l: 0, t: 0 } };
+  w.days.forEach((d, i) => {
+    const stay = i === 0 ? !!w.carry : w.days[i - 1].type === 'S';
+    t[stay ? 'double' : 'single'].b++;
+    t.single.l++;
+    if (d.type === 'O') t.single.t++;
+    else if (d.type !== 'E') t.double.t++;
+  });
+  return t;
+}
+
+const keysFor = v => Object.keys(v === 'week' ? weeks : plans).sort();
+function pickDefault(list) {
+  const cw = weekKey(todayStr());
+  if (list.includes(cw)) return cw;
+  const up = list.find(k => k > cw);
+  return up || list[list.length - 1];
+}
+function ensureCur(list) {
+  if (!list.length) { cur = null; return; }
+  if (cur && list.includes(cur)) return;
+  if (cur) {
+    let best = list[0], bd = Infinity;
+    list.forEach(k => { const d = Math.abs(parseD(k) - parseD(cur)); if (d < bd) { bd = d; best = k; } });
+    cur = best;
+  } else cur = pickDefault(list);
+}
+
+function renderLock() {
+  const b = $('lock-btn');
+  b.innerHTML = edit ? 'Done' : LOCK_SVG;
+  b.classList.toggle('on', edit);
+  b.setAttribute('aria-label', edit ? 'Leave edit mode' : 'Edit mode');
+}
+
+function renderTools() {
+  const t = $('tools');
+  if (!edit) { t.hidden = true; return; }
+  t.hidden = false;
+  const has = cur && (view === 'week' ? weeks[cur] : plans[cur]);
+  t.innerHTML = view === 'week'
+    ? `<button type="button" class="btn small" data-a="new-week">New week</button>${has ? '<button type="button" class="btn small" data-a="edit-week">Edit this week</button>' : ''}`
+    : `<button type="button" class="btn small" data-a="new-plan">New food plan</button>${has ? '<button type="button" class="btn small" data-a="edit-plan">Edit this plan</button><button type="button" class="btn small" data-a="copy">Copy text</button>' : ''}`;
+}
+
+function numCell(n, dbl) {
+  return `<td class="${n === 0 ? 'zero' : dbl ? 'dbl' : ''}">${n === 0 ? '–' : n}</td>`;
+}
+
+function render() {
+  $('seg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === view)));
+  renderLock();
+  const picker = $('picker'), content = $('content');
+  if (failed) { picker.hidden = true; content.innerHTML = '<p class="empty">Can\'t reach the planner right now. Try again in a moment.</p>'; renderTools(); return; }
+  const loaded = view === 'week' ? loadedW : loadedP;
+  if (!loaded) { picker.hidden = true; $('count').textContent = ''; content.innerHTML = '<p class="empty">Loading…</p>'; renderTools(); return; }
+
+  const list = keysFor(view);
+  ensureCur(list);
+  const thisWk = weekKey(todayStr());
+  picker.hidden = !list.length;
+  picker.innerHTML = list.map(k => `<option value="${k}"${k === cur ? ' selected' : ''}>${range(k)}${k === thisWk ? ' (this week)' : ''}</option>`).join('');
+  $('count').textContent = edit && list.length ? `${list.length} ${view === 'week' ? 'week' : 'food plan'}${list.length === 1 ? '' : 's'} stored` : '';
+
+  if (!list.length) {
+    content.innerHTML = `<p class="empty">${edit ? (view === 'week' ? 'No weeks yet. Tap New week to add one.' : 'No food plans yet. Tap New food plan to add one.') : (view === 'week' ? 'Nothing planned yet. Check back soon.' : 'No food plan yet. Check back soon.')}</p>`;
+  } else if (view === 'week') {
+    const today = todayStr(), w = weeks[cur];
+    content.innerHTML = '<div class="rows">' + w.days.map((d, i) => {
+      const date = addDays(cur, i), t = TYPES[d.type] || TYPES.O;
+      const off = !d.shift || /^\s*off\s*$/i.test(d.shift);
+      return `<div class="row${date === today ? ' today' : ''}"><div class="day"><b>${DOW[i]}</b><span>${shortDate(date)}</span></div><span class="shift${off ? ' off' : ''}">${esc(d.shift || '—')}</span><span class="pill ${t.c}">${t.label}</span></div>`;
+    }).join('') + '</div>';
+  } else {
+    const p = plans[cur];
+    const rows = [['Breakfast', 'b'], ['Lunch', 'l'], ['Tea', 't']].map(r => `<tr><td>${r[0]}</td>${numCell(p.single[r[1]] || 0, false)}${numCell(p.double[r[1]] || 0, true)}</tr>`).join('');
+    content.innerHTML = `<div class="food"><table><thead><tr><th></th><th>Single</th><th>Double</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  renderTools();
+}
+
+function twoTap(btn, idle, action) {
+  const reset = () => { clearTimeout(btn._t); btn.classList.remove('confirm'); btn.textContent = idle; };
+  btn.addEventListener('click', () => {
+    if (!btn.classList.contains('confirm')) {
+      btn.classList.add('confirm');
+      btn.textContent = 'Tap again to delete';
+      clearTimeout(btn._t);
+      btn._t = setTimeout(reset, 3500);
+      return;
+    }
+    reset();
+    action();
+  });
+  return reset;
+}
+
+let wkEditing = null;
+const carryFromPrev = start => { const p = weeks[addDays(start, -7)]; return p ? p.days[6].type === 'S' : false; };
+function defaultNewWeek() {
+  const ks = Object.keys(weeks).sort();
+  return ks.length ? addDays(ks[ks.length - 1], 7) : addDays(weekKey(todayStr()), 7);
+}
+function buildDays(days) {
+  $('wk-days').innerHTML = DOW.map((n, i) => {
+    const d = days ? days[i] : { shift: '', type: 'O' };
+    const opts = Object.keys(TYPES).map(k => `<option value="${k}"${k === d.type ? ' selected' : ''}>${TYPES[k].label}</option>`).join('');
+    return `<div class="erow"><div class="etop"><b>${n}</b><input type="text" data-shift="${i}" value="${esc(d.shift || '')}" placeholder="1600 - 0100, or Off" autocomplete="off" autocapitalize="off"></div><select data-type="${i}" aria-label="Day type for ${n}">${opts}</select></div>`;
+  }).join('');
+}
+function updateWkRange() {
+  const v = $('wk-date').value;
+  $('wk-range').textContent = !v ? '' : `Week of ${range(v)}${!wkEditing && weeks[v] ? '. A week is already saved for these dates and saving will replace it.' : ''}`;
+}
+function openWeek(key) {
+  wkEditing = key || null;
+  const w = key ? weeks[key] : null;
+  const start = key || defaultNewWeek();
+  $('wk-title').textContent = w ? 'Edit week' : 'New week';
+  $('wk-date').value = start;
+  $('wk-date').disabled = !!w;
+  buildDays(w ? w.days : null);
+  $('wk-carry').checked = w ? !!w.carry : carryFromPrev(start);
+  $('wk-del').hidden = !w;
+  resetWkDel();
+  updateWkRange();
+  $('wk-dlg').showModal();
+}
+async function saveWeek() {
+  const v = $('wk-date').value;
+  if (!v) { toast('Pick a start date'); return; }
+  const key = weekKey(v);
+  const days = DOW.map((_, i) => ({
+    shift: $('wk-days').querySelector(`[data-shift="${i}"]`).value.trim(),
+    type: $('wk-days').querySelector(`[data-type="${i}"]`).value
+  }));
+  try {
+    await setDoc(doc(db, 'weeks', key), { start: key, carry: $('wk-carry').checked, days, updated: Date.now() });
+    $('wk-dlg').close();
+    view = 'week'; cur = key; LS.set('pl_view', view);
+    toast('Week saved');
+    render();
+  } catch (e) { toast("Couldn't save. Check your connection"); }
+}
+const resetWkDel = twoTap($('wk-del'), 'Delete week', async () => {
+  if (!wkEditing) return;
+  try {
+    await deleteDoc(doc(db, 'weeks', wkEditing));
+    $('wk-dlg').close();
+    toast('Week deleted');
+  } catch (e) { toast("Couldn't delete. Check your connection"); }
+});
+
+let fdEditing = null;
+const FIELDS = [['sb', 'single', 'b'], ['db', 'double', 'b'], ['sl', 'single', 'l'], ['dl', 'double', 'l'], ['st', 'single', 't'], ['dt', 'double', 't']];
+const setCounts = t => FIELDS.forEach(([id, k, m]) => { $('fd-' + id).value = t ? (t[k][m] || 0) : 0; });
+function getCounts() {
+  const t = { single: {}, double: {} };
+  FIELDS.forEach(([id, k, m]) => { const v = parseInt($('fd-' + id).value, 10); t[k][m] = Number.isFinite(v) && v > 0 ? v : 0; });
+  return t;
+}
+function defaultNewPlan() {
+  const cw = weekKey(todayStr());
+  const c = Object.keys(weeks).sort().filter(k => k >= cw && !plans[k]);
+  if (c.length) return c[0];
+  const ks = Object.keys(plans).sort();
+  return ks.length ? addDays(ks[ks.length - 1], 7) : addDays(cw, 7);
+}
+function updateFdUI() {
+  const v = $('fd-date').value;
+  $('fd-fill').hidden = !(v && weeks[v]);
+  let h = '';
+  if (v) {
+    h = `Week of ${range(v)}. `;
+    if (weeks[v]) h += fdEditing ? 'You can adjust the numbers by hand.' : 'Filled in from your saved week. Adjust if needed.';
+    else h += 'No saved week for these dates, so enter the numbers yourself.';
+    if (!fdEditing && plans[v]) h += ' A plan already exists and saving will replace it.';
+  }
+  $('fd-hint').textContent = h;
+}
+function openPlan(key) {
+  fdEditing = key || null;
+  const p = key ? plans[key] : null;
+  const start = key || defaultNewPlan();
+  $('fd-title').textContent = p ? 'Edit food plan' : 'New food plan';
+  $('fd-date').value = start;
+  $('fd-date').disabled = !!p;
+  if (p) setCounts(p); else if (weeks[start]) setCounts(calc(weeks[start])); else setCounts(null);
+  $('fd-del').hidden = !p;
+  resetFdDel();
+  updateFdUI();
+  $('fd-dlg').showModal();
+}
+async function savePlan() {
+  const v = $('fd-date').value;
+  if (!v) { toast('Pick a start date'); return; }
+  const key = weekKey(v), t = getCounts();
+  try {
+    await setDoc(doc(db, 'foodPlans', key), { start: key, single: t.single, double: t.double, updated: Date.now() });
+    $('fd-dlg').close();
+    view = 'food'; cur = key; LS.set('pl_view', view);
+    toast('Food plan saved');
+    render();
+  } catch (e) { toast("Couldn't save. Check your connection"); }
+}
+const resetFdDel = twoTap($('fd-del'), 'Delete food plan', async () => {
+  if (!fdEditing) return;
+  try {
+    await deleteDoc(doc(db, 'foodPlans', fdEditing));
+    $('fd-dlg').close();
+    toast('Food plan deleted');
+  } catch (e) { toast("Couldn't delete. Check your connection"); }
+});
+
+function planText(k) {
+  const p = plans[k], nm = { b: 'Breakfast', l: 'Lunch', t: 'Tea' };
+  const blk = kind => ['b', 'l', 't'].filter(m => p[kind][m] > 0).map(m => `${p[kind][m]}x ${kind === 'single' ? 'Single' : 'Double'} ${nm[m]}`).join('\n');
+  return `Food Plan : ${dmy(k)}\n` + [blk('single'), blk('double')].filter(Boolean).join('\n\n');
+}
+async function copyPlan() {
+  const text = planText(cur);
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e2) {}
+    ta.remove();
+  }
+  toast('Copied');
+}
+
+$('seg').addEventListener('click', e => {
+  const b = e.target.closest('button[data-v]');
+  if (!b) return;
+  view = b.dataset.v;
+  LS.set('pl_view', view);
+  render();
+});
+$('picker').addEventListener('change', e => { cur = e.target.value; render(); });
+$('tools').addEventListener('click', e => {
+  const b = e.target.closest('button[data-a]');
+  if (!b) return;
+  const a = b.dataset.a;
+  if (a === 'new-week') openWeek(null);
+  else if (a === 'edit-week') openWeek(cur);
+  else if (a === 'new-plan') openPlan(null);
+  else if (a === 'edit-plan') openPlan(cur);
+  else if (a === 'copy') copyPlan();
+});
+
+$('lock-btn').addEventListener('click', () => {
+  if (edit) { edit = false; LS.del('pl_edit'); render(); return; }
+  $('pw-input').value = '';
+  $('pw-err').hidden = true;
+  $('pw-dlg').showModal();
+  $('pw-input').focus();
+});
+function tryUnlock() {
+  if ($('pw-input').value === PASSCODE) {
+    edit = true; LS.set('pl_edit', '1');
+    $('pw-dlg').close();
+    render();
+  } else $('pw-err').hidden = false;
+}
+$('pw-ok').addEventListener('click', tryUnlock);
+$('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+$('pw-cancel').addEventListener('click', () => $('pw-dlg').close());
+
+$('wk-date').addEventListener('change', () => {
+  const v = $('wk-date').value;
+  if (v) {
+    const m = weekKey(v);
+    if (m !== v) $('wk-date').value = m;
+    if (!wkEditing) $('wk-carry').checked = carryFromPrev(m);
+  }
+  updateWkRange();
+});
+$('wk-save').addEventListener('click', saveWeek);
+$('wk-cancel').addEventListener('click', () => $('wk-dlg').close());
+$('wk-dlg').addEventListener('close', resetWkDel);
+
+$('fd-date').addEventListener('change', () => {
+  const v = $('fd-date').value;
+  if (v) {
+    const m = weekKey(v);
+    if (m !== v) $('fd-date').value = m;
+    if (!fdEditing) setCounts(weeks[m] ? calc(weeks[m]) : null);
+  }
+  updateFdUI();
+});
+$('fd-fill').addEventListener('click', () => {
+  const v = $('fd-date').value;
+  if (weeks[v]) { setCounts(calc(weeks[v])); toast('Recalculated'); }
+});
+$('fd-save').addEventListener('click', savePlan);
+$('fd-cancel').addEventListener('click', () => $('fd-dlg').close());
+$('fd-dlg').addEventListener('close', resetFdDel);
+
+['pw-dlg', 'wk-dlg', 'fd-dlg'].forEach(id => $(id).addEventListener('click', e => { if (e.target === $(id)) $(id).close(); }));
+
+onSnapshot(collection(db, 'weeks'), snap => {
+  weeks = {};
+  snap.forEach(d => { const x = d.data(); if (x && Array.isArray(x.days) && x.days.length === 7) weeks[d.id] = x; });
+  loadedW = true; failed = false;
+  render();
+}, () => { failed = true; render(); });
+
+onSnapshot(collection(db, 'foodPlans'), snap => {
+  plans = {};
+  snap.forEach(d => { const x = d.data(); if (x && x.single && x.double) plans[d.id] = x; });
+  loadedP = true; failed = false;
+  render();
+}, () => { failed = true; render(); });
+
+render();
+</script>
+</body>
+</html>
